@@ -13,27 +13,18 @@ import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
 import org.foi.nwtis.antbaric.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.antbaric.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.antbaric.konfiguracije.NemaKonfiguracije;
+import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class KorisnikSustava {
 
     public static void main(String[] args) {
-// -server -konf datoteka(.txt | .xml | .bin) [-load]
-        String sintaksa = "(^-server.+)|(^-admin.+)|(^-user.+)|(^-show.+)";
-        final String sintaksa2 = "^-konf ([^\\s]+\\.)(txt|xml|bin)( +-load)?$";
-        final String adminRegex = "^-admin -server ([^\\s]+) -port ([0-9]{4})?$";
         boolean load = false;
         final String serverName;
         final int port;
 
-        StringBuilder sb = new StringBuilder();
-        for (String arg : args) {
-            sb.append(arg).append(" ");
-        }
-        String p = sb.toString().trim();
-        Pattern pattern = Pattern.compile(adminRegex);
-        Matcher m = pattern.matcher(p);
-        boolean status = m.matches();
-        if (status) {
+        Matcher m = SyntaxValidator.validate(args);
+
+        if (m != null) {
             int poc = 0;
             int kraj = m.groupCount();
             for (int i = poc; i <= kraj; i++) {
