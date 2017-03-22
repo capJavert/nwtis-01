@@ -3,16 +3,10 @@ package org.foi.nwtis.antbaric.zadaca_1;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
-import org.foi.nwtis.antbaric.konfiguracije.KonfiguracijaApstraktna;
-import org.foi.nwtis.antbaric.konfiguracije.NeispravnaKonfiguracija;
-import org.foi.nwtis.antbaric.konfiguracije.NemaKonfiguracije;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class KorisnikSustava {
@@ -22,7 +16,7 @@ public class KorisnikSustava {
         final String serverName;
         final int port;
 
-        Matcher m = SyntaxValidator.validate(args);
+        Matcher m = SyntaxValidator.validateArguments(args);
 
         if (m != null) {
             int poc = 0;

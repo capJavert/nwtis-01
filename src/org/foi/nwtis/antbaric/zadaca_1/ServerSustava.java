@@ -19,7 +19,7 @@ public class ServerSustava {
         boolean load = false;
         final String fileName;
 
-        Matcher m = SyntaxValidator.validate(args);
+        Matcher m = SyntaxValidator.validateArguments(args);
 
         if (m != null) {
             int poc = 0;
@@ -65,7 +65,7 @@ public class ServerSustava {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                RadnaDretva radnaDretva = new RadnaDretva(socket);
+                RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija);
                 //todo dodaj dretvu u listu aktivnih dretvi
                 radnaDretva.start();
                 //provjeriti ima li mjesta za thread
