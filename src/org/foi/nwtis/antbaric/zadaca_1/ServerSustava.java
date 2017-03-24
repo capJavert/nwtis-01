@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
 import org.foi.nwtis.antbaric.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.antbaric.konfiguracije.NeispravnaKonfiguracija;
@@ -14,6 +13,7 @@ import org.foi.nwtis.antbaric.konfiguracije.NemaKonfiguracije;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class ServerSustava {
+    public static Evidencija log;
 
     public static void main(String[] args) {
         boolean load = false;
@@ -65,7 +65,7 @@ public class ServerSustava {
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija);
+                RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija, log);
                 //todo dodaj dretvu u listu aktivnih dretvi
                 radnaDretva.start();
                 //provjeriti ima li mjesta za thread

@@ -4,36 +4,47 @@ import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
 import org.foi.nwtis.antbaric.zadaca_1.components.ErrorNwtis;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 import org.foi.nwtis.antbaric.zadaca_1.components.UserManager;
+import org.foi.nwtis.antbaric.zadaca_1.components.WaitTimer;
 import org.foi.nwtis.antbaric.zadaca_1.models.User;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 public class RadnaDretva extends Thread {
-
     private final Socket socket;
     private final Konfiguracija config;
     private String state;
     private UserManager userManager;
     private OutputStream outputStream;
     private InputStream inputStream;
+    private Evidencija log;
+    private WaitTimer waitTimer;
     //todo varijabla koja pamti kad je pocela dretva
 
-    public RadnaDretva(Socket socket, Konfiguracija config) throws IOException {
-
+    public RadnaDretva(Socket socket, Konfiguracija config, Evidencija log) throws IOException {
+        this.log = log;
         this.socket = socket;
         this.config = config;
         this.state = "IDLE";
+        this.waitTimer = new WaitTimer();
     }
 
     @Override
     public void interrupt() {
+
         super.interrupt();
+    }
+
+    @Override
+    public synchronized void start() {
+
+        super.start();
     }
 
     @Override
@@ -90,6 +101,18 @@ public class RadnaDretva extends Thread {
                             outputStream.write(execStat(params).getBytes());
                             outputStream.flush();
                             break;
+                        case "ADD;":
+                            outputStream.write(execAdd(params).getBytes());
+                            outputStream.flush();
+                            break;
+                        case "TEST;":
+                            outputStream.write(execTest(params).getBytes());
+                            outputStream.flush();
+                            break;
+                        case "WAIT":
+                            outputStream.write(execWait(params).getBytes());
+                            outputStream.flush();
+                            break;
                         default:
                             outputStream.write(("ERROR: Nepoznata komanda " + command).getBytes());
                             outputStream.flush();
@@ -127,13 +150,14 @@ public class RadnaDretva extends Thread {
             if(this.state.equals("PAUSE")) {
                 return ErrorNwtis.getMessage("01");
             } else {
-                this.wait();
+                this.state = "PAUSE";
+                //this.wait();
             }
         } else {
             return ErrorNwtis.getMessage("00");
         }
 
-        return "OK";
+        return "OK;";
     }
 
     private String execStart(String[] params) throws InterruptedException {
@@ -141,7 +165,7 @@ public class RadnaDretva extends Thread {
 
         if(user != null) {
             if(this.state.equals("PAUSE")) {
-                this.notify();
+                this.state = "IDLE";
             } else {
                 return ErrorNwtis.getMessage("02");
             }
@@ -149,7 +173,7 @@ public class RadnaDretva extends Thread {
             return ErrorNwtis.getMessage("00");
         }
 
-        return "OK";
+        return "OK;";
     }
 
     private String execStop(String[] params) {
@@ -157,7 +181,7 @@ public class RadnaDretva extends Thread {
 
         if(user != null) {
             if(this.state.equals("IDLE")) {
-                //stop and log
+                this.interrupt();
             } else {
                 return ErrorNwtis.getMessage("03");
             }
@@ -165,7 +189,7 @@ public class RadnaDretva extends Thread {
             return ErrorNwtis.getMessage("00");
         }
 
-        return "OK";
+        return "OK;";
     }
 
     private String execStat(String[] params) {
@@ -181,12 +205,56 @@ public class RadnaDretva extends Thread {
             return ErrorNwtis.getMessage("00");
         }
 
-        return "OK";
+        return "OK;";
+    }
+    
+    private String execAdd(String[] params) {
+        if(!this.log.findAddress(params[1])) {
+            if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) < this.log.addressCount) {
+                this.log.setAddress(params[1]);
+            } else {
+                return ErrorNwtis.getMessage("10");
+            }
+        } else {
+            return ErrorNwtis.getMessage("11");
+        }
+
+        return "OK;";
     }
 
-    @Override
-    public synchronized void start() {
-        super.start();
+    private String execTest(String[] params) {
+        if(!this.log.findAddress(params[1])) {
+            if(this.testAddress(params[1])) {
+                return "OK; YES";
+            } else {
+                return "OK; NO";
+            }
+        } else {
+            return ErrorNwtis.getMessage("12");
+        }
+    }
+
+    private String execWait(String[] params) {
+        if(this.state.equals("IDLE")) {
+            this.waitTimer.start(Integer.parseInt(params[1]));
+
+            while (this.waitTimer.getTimeout() > 0) {
+                this.waitTimer.click();
+            }
+        } else {
+            return ErrorNwtis.getMessage("13");
+        }
+
+        return "OK;";
+    }
+
+    private boolean testAddress(String address) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(address, 80), 3);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
 }
