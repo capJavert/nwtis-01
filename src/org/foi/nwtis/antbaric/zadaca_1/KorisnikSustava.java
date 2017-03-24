@@ -22,14 +22,16 @@ public class KorisnikSustava {
             int poc = 0;
             int kraj = m.groupCount();
             for (int i = poc; i <= kraj; i++) {
-                System.out.println(i + ". " + m.group(i));
+                if(m.group(i) != null) {
+                    System.out.println(i + ". " + m.group(i));
+                }
             }
 
             serverName = m.group(1);
             port = Integer.parseInt(m.group(2));
 
             KorisnikSustava serverSustava = new KorisnikSustava();
-            serverSustava.startUser(serverName, port);
+            serverSustava.startUser(serverName, port, m);
 
         } else {
             System.out.println("Ne odgovara!");
@@ -37,7 +39,7 @@ public class KorisnikSustava {
 
     }
 
-    private void startUser(final String serverName, final int port) {
+    private void startUser(final String serverName, final int port, Matcher params) {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         Socket socket = null;
@@ -47,9 +49,9 @@ public class KorisnikSustava {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
 
-            final String zahtjev = "USER pero; PASSWD 123456; PAUSE;";
+            final String command = this.buildCommand(params);
 
-            outputStream.write(zahtjev.getBytes());
+            outputStream.write(command.getBytes());
             outputStream.flush();
             socket.shutdownOutput();
 
@@ -82,4 +84,8 @@ public class KorisnikSustava {
         }
     }
 
+    private String buildCommand(Matcher params) {
+        // TODO: Implement command builder with regexp or something
+        return "command";
+    }
 }

@@ -1,6 +1,5 @@
 package org.foi.nwtis.antbaric.zadaca_1.components;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,14 +16,9 @@ public class SyntaxValidator {
     private static List<String> rules() {
         return Stream.of(
                 "^-konf ([^\\s]+\\.)(txt|xml|bin)( +-load)?$",
-                //"(^-server.+)|(^-admin.+)|(^-user.+)|(^-show.+)",
-                "^-admin -server ([^\\s]+) -port ([0-9]{4})",
-                "^USER ([^\\s]+); PASSWD ([^\\s]+); ((PAUSE)|(STOP)|(START)|(STAT));$",
-                "^USER ([^\\s]+); ADD ([^\\s]+);$",
-                "^USER ([^\\s]+); TEST ([^\\s]+);$",
-                "^USER ([^\\s]+); WAIT ([^\\d]+);$"
-                //"^-user -s (([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]) -port ([0-9]{4}) -u korisnik [[-a | -t] URL] | [-w nnn]?$",
-                //"serialization", "^-prikaz -s datoteka?$"
+                "^(-admin)? ?-server (?:(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6})|(localhost)) -port ([8|9][0-9]{3}) -u ([a-zA-Z0-9-_]+) -p ([a-zA-Z0-9-_!#]+) -(pause|stop|start|stat)$",
+                "^(-korisnik)? ?-s (?:(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6})|(localhost)) -port ([8|9][0-9]{3}) -u ([a-zA-Z0-9-_]+) ?(-(a|t) (?:(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(((http:\\/\\/)|(https:\\/\\/))([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6})|(localhost)))? ?(-w (([1-9]{1})|([1-9]{1}[0-9]{1})|([1-5]{1}[0-9]{0,2})|600))?$",
+                "^(-prikaz)? ?-s ((:?([a-zA-Z]:|(http:(?:\\\\|\\/))))?(?:(?:\\\\|\\/)?(\\w[\\w ]*.*))+\\.(?:(?i)bin(?-i)))$"
         ).collect(Collectors.toList());
     }
 

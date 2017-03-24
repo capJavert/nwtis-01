@@ -74,54 +74,50 @@ public class RadnaDretva extends Thread {
 
             System.out.println(buffer);
 
-            Matcher m = SyntaxValidator.validate(buffer);
+            // TODO: move to command + in thread params for more easy implementation
 
-            if(m != null){
-                String commandLine = buffer.toString();
-                commandLine = commandLine.replace("USER ", "");
-                commandLine = commandLine.replace("PASSWD ", "");
-                String[] params = commandLine.split("; ");
-                String command = params[params.length-1];
+            String commandLine = buffer.toString();
+            commandLine = commandLine.replace("USER ", "");
+            commandLine = commandLine.replace("PASSWD ", "");
+            String[] params = commandLine.split("; ");
+            String command = params[params.length-1];
 
-                try {
-                    switch (command.replace(" ", "")) {
-                        case "PAUSE;":
-                            outputStream.write(execPause(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "START;":
-                            outputStream.write(execStart(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "STOP;":
-                            outputStream.write(execStop(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "STAT;":
-                            outputStream.write(execStat(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "ADD;":
-                            outputStream.write(execAdd(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "TEST;":
-                            outputStream.write(execTest(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        case "WAIT":
-                            outputStream.write(execWait(params).getBytes());
-                            outputStream.flush();
-                            break;
-                        default:
-                            outputStream.write(("ERROR: Nepoznata komanda " + command).getBytes());
-                            outputStream.flush();
-                    }
-                } catch (InterruptedException exception) {
-                    System.out.println("Pogreška kod rada s dretvom");
+            try {
+                switch (command.replace(" ", "")) {
+                    case "PAUSE;":
+                        outputStream.write(execPause(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "START;":
+                        outputStream.write(execStart(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "STOP;":
+                        outputStream.write(execStop(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "STAT;":
+                        outputStream.write(execStat(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "ADD;":
+                        outputStream.write(execAdd(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "TEST;":
+                        outputStream.write(execTest(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    case "WAIT":
+                        outputStream.write(execWait(params).getBytes());
+                        outputStream.flush();
+                        break;
+                    default:
+                        outputStream.write(("ERROR: Nepoznata komanda " + command).getBytes());
+                        outputStream.flush();
                 }
-            } else {
-                System.out.println("NULL");
+            } catch (InterruptedException exception) {
+                System.out.println("Pogreška kod rada s dretvom");
             }
         } catch (final IOException ex) {
             Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
