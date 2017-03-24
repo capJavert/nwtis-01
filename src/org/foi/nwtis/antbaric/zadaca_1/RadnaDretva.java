@@ -246,7 +246,7 @@ public class RadnaDretva extends Thread {
 
     private boolean testAddress(String address) {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(address, 80), 3);
+            socket.connect(new InetSocketAddress(address, 80));
             return true;
         } catch (IOException e) {
             return false;
