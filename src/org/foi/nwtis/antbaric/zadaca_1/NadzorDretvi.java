@@ -31,7 +31,7 @@ public class NadzorDretvi extends Thread {
                 //provjeriti koliko traje svaka dretva
                 //todo obrisati dretvu iz kolekcije ako traje predugo
                 long finishTime = System.currentTimeMillis();
-                sleep(sleepTime - (finishTime - currentTime));
+                sleep(2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(NadzorDretvi.class.getName()).log(Level.SEVERE, null, ex);
             }

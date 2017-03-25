@@ -25,6 +25,7 @@ public class RadnaDretva extends Thread {
     private InputStream inputStream;
     private Evidencija log;
     private WaitTimer waitTimer;
+    public volatile boolean isInterupted;
     //todo varijabla koja pamti kad je pocela dretva
 
     public RadnaDretva(Socket socket, Konfiguracija config, Status state, Evidencija log) throws IOException {
@@ -33,6 +34,7 @@ public class RadnaDretva extends Thread {
         this.config = config;
         this.state = state;
         this.waitTimer = new WaitTimer();
+        this.isInterupted = false;
     }
 
     @Override
@@ -142,6 +144,8 @@ public class RadnaDretva extends Thread {
                 Logger.getLogger(RadnaDretva.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        this.isInterupted = true;
         //todo azuriraj evidenciju rada
         //todo obrisati dretvu iz liste
         //todo smanjiti brojac, medusobno iskljucivanje

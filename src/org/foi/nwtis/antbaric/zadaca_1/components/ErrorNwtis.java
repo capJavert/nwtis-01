@@ -24,6 +24,8 @@ public class ErrorNwtis {
                 return "ERROR" + code + "; Adresa ne postoji";
             case "13":
                 return "ERROR" + code + "; Dretva nije uspjela odraditi cekanje";
+            case "20":
+                return "ERROR" + code + "; Ne postoji slobodna radna dretva";
             default:
                 return "ERROR; Doslo je do nepoznate pogreske u sustavu";
         }

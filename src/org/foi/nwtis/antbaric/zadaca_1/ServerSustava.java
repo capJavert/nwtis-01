@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,7 @@ import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 
 public class ServerSustava {
     public static Evidencija log;
-    public static List<Thread> threads;
+    public static List<RadnaDretva> threads;
     public static Status state;
 
     public static void main(String[] args) {
@@ -72,11 +73,23 @@ public class ServerSustava {
                 Socket socket = serverSocket.accept();
 
                 if(threads.size() < Integer.parseInt(konfiguracija.dajPostavku("maksBrojRadnihDretvi"))) {
+                    System.out.print(threads.size());
                     RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija, state, log);
-                    threads.add(radnaDretva);
+
+                    synchronized (threads) {
+                        threads.add(radnaDretva);
+                    }
                     radnaDretva.start();
                 } else {
-                    // TODO: handle if thread cap is exceeded
+                    rezervnaDretva.alert(socket);
+                }
+
+                synchronized (threads) {
+                    for (RadnaDretva thread : threads) {
+                        if (thread.isInterupted) {
+                            threads.remove(thread);
+                        }
+                    }
                 }
             }
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija | IOException ex) {
