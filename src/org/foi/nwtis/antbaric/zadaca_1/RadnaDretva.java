@@ -2,24 +2,24 @@ package org.foi.nwtis.antbaric.zadaca_1;
 
 import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
 import org.foi.nwtis.antbaric.zadaca_1.components.ErrorNwtis;
-import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 import org.foi.nwtis.antbaric.zadaca_1.components.UserManager;
 import org.foi.nwtis.antbaric.zadaca_1.components.WaitTimer;
+import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 import org.foi.nwtis.antbaric.zadaca_1.models.User;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 public class RadnaDretva extends Thread {
     private final Socket socket;
     private final Konfiguracija config;
-    private String state;
+    private Status state;
     private UserManager userManager;
     private OutputStream outputStream;
     private InputStream inputStream;
@@ -27,11 +27,11 @@ public class RadnaDretva extends Thread {
     private WaitTimer waitTimer;
     //todo varijabla koja pamti kad je pocela dretva
 
-    public RadnaDretva(Socket socket, Konfiguracija config, Evidencija log) throws IOException {
+    public RadnaDretva(Socket socket, Konfiguracija config, Status state, Evidencija log) throws IOException {
         this.log = log;
         this.socket = socket;
         this.config = config;
-        this.state = "IDLE";
+        this.state = state;
         this.waitTimer = new WaitTimer();
     }
 
@@ -72,43 +72,51 @@ public class RadnaDretva extends Thread {
                 }
             }
 
-            System.out.println(buffer);
+            //System.out.println(buffer);
 
-            // TODO: move to command + in thread params for more easy implementation
-
-            String commandLine = buffer.toString();
-            commandLine = commandLine.replace("USER ", "");
-            commandLine = commandLine.replace("PASSWD ", "");
-            String[] params = commandLine.split("; ");
+            String[] params = this.readCommand(buffer.toString());
             String command = params[params.length-1];
 
             try {
                 switch (command.replace(" ", "")) {
-                    case "PAUSE;":
+                    case "pause":
+                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; PAUSE;");
                         outputStream.write(execPause(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "START;":
+                    case "start":
+                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; START;");
                         outputStream.write(execStart(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "STOP;":
+                    case "stop":
+                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; STOP;");
                         outputStream.write(execStop(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "STAT;":
+                    case "stat":
+                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; STAT;");
                         outputStream.write(execStat(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "ADD;":
+                    case "-a":
+                        if(!this.state.get().equals("IDLE")) break;
+
+                        System.out.println("USER " + params[0] + "; ADD " + params[1] + ";");
                         outputStream.write(execAdd(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "TEST;":
+                    case "-t":
+                        if(!this.state.get().equals("IDLE")) break;
+
+                        System.out.println("USER " + params[0] + "; TEST " + params[1] + ";");
                         outputStream.write(execTest(params).getBytes());
                         outputStream.flush();
                         break;
-                    case "WAIT":
+                    case "-w":
+                        if(!this.state.get().equals("IDLE")) break;
+
+                        System.out.println("USER " + params[0] + "; WAIT " + params[1] + ";");
                         outputStream.write(execWait(params).getBytes());
                         outputStream.flush();
                         break;
@@ -143,11 +151,12 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(this.state.equals("PAUSE")) {
+            if(this.state.get().equals("PAUSE")) {
                 return ErrorNwtis.getMessage("01");
             } else {
-                this.state = "PAUSE";
-                //this.wait();
+                synchronized (this.state) {
+                    this.state.set("PAUSE");
+                }
             }
         } else {
             return ErrorNwtis.getMessage("00");
@@ -160,8 +169,10 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(this.state.equals("PAUSE")) {
-                this.state = "IDLE";
+            if(this.state.get().equals("PAUSE")) {
+                synchronized (this.state) {
+                    this.state.set("IDLE");
+                }
             } else {
                 return ErrorNwtis.getMessage("02");
             }
@@ -176,8 +187,8 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(this.state.equals("IDLE")) {
-                this.interrupt();
+            if(true) {
+                System.exit(0);
             } else {
                 return ErrorNwtis.getMessage("03");
             }
@@ -192,7 +203,7 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(!this.state.equals("IDLE")) {
+            if(!this.state.get().equals("IDLE")) {
                 //return log
             } else {
                 return ErrorNwtis.getMessage("04");
@@ -206,8 +217,10 @@ public class RadnaDretva extends Thread {
     
     private String execAdd(String[] params) {
         if(!this.log.findAddress(params[1])) {
-            if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) < this.log.addressCount) {
-                this.log.setAddress(params[1]);
+            if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) > this.log.addressCount) {
+                synchronized (this.log) {
+                    this.log.setAddress(params[1]);
+                }
             } else {
                 return ErrorNwtis.getMessage("10");
             }
@@ -219,7 +232,7 @@ public class RadnaDretva extends Thread {
     }
 
     private String execTest(String[] params) {
-        if(!this.log.findAddress(params[1])) {
+        if(this.log.findAddress(params[1])) {
             if(this.testAddress(params[1])) {
                 return "OK; YES";
             } else {
@@ -231,13 +244,13 @@ public class RadnaDretva extends Thread {
     }
 
     private String execWait(String[] params) {
-        if(this.state.equals("IDLE")) {
+        try {
             this.waitTimer.start(Integer.parseInt(params[1]));
 
             while (this.waitTimer.getTimeout() > 0) {
                 this.waitTimer.click();
             }
-        } else {
+        } catch (InterruptedException exception){
             return ErrorNwtis.getMessage("13");
         }
 
@@ -245,12 +258,22 @@ public class RadnaDretva extends Thread {
     }
 
     private boolean testAddress(String address) {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(address, 80));
+        try {
+            URL u = new URL (address);
+            HttpURLConnection huc =  ( HttpURLConnection )  u.openConnection ();
+            huc.setRequestMethod ("GET");
+            huc.connect();
+
             return true;
         } catch (IOException e) {
             return false;
         }
+    }
+
+    private String[] readCommand(String command) {
+
+
+        return command.split(";");
     }
 
 }

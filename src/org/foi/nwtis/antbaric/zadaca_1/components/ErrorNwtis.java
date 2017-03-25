@@ -9,11 +9,11 @@ public class ErrorNwtis {
             case "00":
                 return "ERROR" + code + "; Korisnik nije valjani administrator sustava.";
             case "01":
-                return "ERROR" + code + "; Dretva je vec u stanju PAUSE";
+                return "ERROR" + code + "; Server je vec u stanju PAUSE";
             case "02":
-                return "ERROR" + code + "; Dretva nije u stanju PAUSE";
+                return "ERROR" + code + "; Server nije u stanju PAUSE";
             case "03":
-                return "ERROR" + code + "; Dretva ne moze biti prekinuta ili postoji problem sa serijalizacijom";
+                return "ERROR" + code + "; Server ne moze biti prekinut ili postoji problem sa serijalizacijom";
             case "04":
                 return "ERROR" + code + "; Evidencija ne moze biti prikazana";
             case "10":

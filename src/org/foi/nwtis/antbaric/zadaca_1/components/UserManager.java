@@ -18,8 +18,6 @@ public class UserManager {
                 String line;
 
                 while ((line = br.readLine()) != null) {
-                    line = line.replace("USER ", "");
-                    line = line.replace("PASSWD ", "");
                     String[] rawUser = line.split(";");
                     users.add(new User(rawUser[0], rawUser[1]));
                 }
@@ -33,6 +31,7 @@ public class UserManager {
     }
 
     public ArrayList<User> getUsers() {
+
         return users;
     }
 

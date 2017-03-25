@@ -3,6 +3,8 @@ package org.foi.nwtis.antbaric.zadaca_1;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -11,9 +13,12 @@ import org.foi.nwtis.antbaric.konfiguracije.KonfiguracijaApstraktna;
 import org.foi.nwtis.antbaric.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.antbaric.konfiguracije.NemaKonfiguracije;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
+import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 
 public class ServerSustava {
     public static Evidencija log;
+    public static List<Thread> threads;
+    public static Status state;
 
     public static void main(String[] args) {
         boolean load = false;
@@ -22,11 +27,7 @@ public class ServerSustava {
         Matcher m = SyntaxValidator.validateArguments(args);
 
         if (m != null) {
-            int poc = 0;
-            int kraj = m.groupCount();
-            for (int i = poc; i <= kraj; i++) {
-                System.out.println(i + ". " + m.group(i));
-            }
+            System.out.println(m.group(0));
 
             fileName = m.group(1) + m.group(2);
 
@@ -63,12 +64,20 @@ public class ServerSustava {
 
             final ServerSocket serverSocket = new ServerSocket(port);
 
+            log = new Evidencija();
+            threads = new ArrayList<>();
+            state = new Status();
+
             while (true) {
                 Socket socket = serverSocket.accept();
-                RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija, log);
-                //todo dodaj dretvu u listu aktivnih dretvi
-                radnaDretva.start();
-                //provjeriti ima li mjesta za thread
+
+                if(threads.size() < Integer.parseInt(konfiguracija.dajPostavku("maksBrojRadnihDretvi"))) {
+                    RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija, state, log);
+                    threads.add(radnaDretva);
+                    radnaDretva.start();
+                } else {
+                    // TODO: handle if thread cap is exceeded
+                }
             }
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija | IOException ex) {
             Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);

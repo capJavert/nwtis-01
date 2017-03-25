@@ -4,6 +4,7 @@ public class WaitTimer {
     private int timeout = 0;
 
     public int getTimeout() {
+
         return timeout;
     }
 
@@ -11,13 +12,13 @@ public class WaitTimer {
         this.timeout = timeout;
     }
 
-    public void click() {
+    public void click() throws InterruptedException {
+        Thread.sleep(1000);
         this.timeout--;
-
-        this.stop();
     }
 
     private void stop() {
+
         this.timeout = 0;
     }
 }

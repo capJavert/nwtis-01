@@ -4,8 +4,6 @@ import org.foi.nwtis.antbaric.zadaca_1.models.Request;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class Evidencija implements Serializable {
     

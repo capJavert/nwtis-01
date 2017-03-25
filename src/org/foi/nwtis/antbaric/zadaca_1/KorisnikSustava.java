@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+
+import org.foi.nwtis.antbaric.zadaca_1.components.AdministratorSustava;
+import org.foi.nwtis.antbaric.zadaca_1.components.KlijentSustava;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class KorisnikSustava {
@@ -19,19 +23,10 @@ public class KorisnikSustava {
         Matcher m = SyntaxValidator.validateArguments(args);
 
         if (m != null) {
-            int poc = 0;
-            int kraj = m.groupCount();
-            for (int i = poc; i <= kraj; i++) {
-                if(m.group(i) != null) {
-                    System.out.println(i + ". " + m.group(i));
-                }
-            }
-
-            serverName = m.group(1);
-            port = Integer.parseInt(m.group(2));
+            System.out.println(m.group(0));
 
             KorisnikSustava serverSustava = new KorisnikSustava();
-            serverSustava.startUser(serverName, port, m);
+            serverSustava.startUser(m);
 
         } else {
             System.out.println("Ne odgovara!");
@@ -39,34 +34,53 @@ public class KorisnikSustava {
 
     }
 
-    private void startUser(final String serverName, final int port, Matcher params) {
+    private void startUser(Matcher params) {
+        String serverName;
+        Integer port;
         InputStream inputStream = null;
         OutputStream outputStream = null;
         Socket socket = null;
+
         try {
-            socket = new Socket(serverName, port);
+            final ArrayList<String> commandParts = new ArrayList<>();
 
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
+            switch (params.group(1)) {
+                case "-admin":
+                    commandParts.add(params.group(8));
+                    commandParts.add(params.group(9));
+                    commandParts.add(params.group(10).trim());
 
-            final String command = this.buildCommand(params);
+                    serverName = params.group(6);
+                    port = Integer.parseInt(params.group(7));
+                    socket = new Socket(serverName, port);
 
-            outputStream.write(command.getBytes());
-            outputStream.flush();
-            socket.shutdownOutput();
-
-            final StringBuffer buffer = new StringBuffer();
-
-            while (true) {
-                int znak = inputStream.read();
-                if (znak == -1) {
+                    AdministratorSustava admin = new AdministratorSustava();
+                    admin.connect(socket, this.buildCommand(commandParts));
                     break;
-                } else {
-                    buffer.append((char) znak);
-                }
-            }
-            System.out.println(buffer);
+                case "-korisnik":
+                    if(params.group(10) != null) {
+                        String[] param = params.group(9).split(" ");
+                        commandParts.add(params.group(8));
+                        commandParts.add(param[1]);
+                        commandParts.add(param[0]);
+                    } else {
+                        String[] param = params.group(19).split(" ");
+                        commandParts.add(params.group(8));
+                        commandParts.add(param[1]);
+                        commandParts.add(param[0]);
+                    }
 
+                    serverName = params.group(6);
+                    port = Integer.parseInt(params.group(7));
+                    socket = new Socket(serverName, port);
+
+                    KlijentSustava client = new KlijentSustava();
+                    client.connect(socket, this.buildCommand(commandParts));
+                    break;
+                case "-prikaz":
+                    commandParts.add(params.group(1));
+                    commandParts.add(params.group(2));
+            }
         } catch (final IOException ex) {
             Logger.getLogger(KorisnikSustava.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -84,8 +98,13 @@ public class KorisnikSustava {
         }
     }
 
-    private String buildCommand(Matcher params) {
-        // TODO: Implement command builder with regexp or something
-        return "command";
+    private String buildCommand(ArrayList<String> params) {
+        String command = "";
+
+        for(String p : params) {
+            command += (p + ";");
+        }
+
+        return command;
     }
 }
