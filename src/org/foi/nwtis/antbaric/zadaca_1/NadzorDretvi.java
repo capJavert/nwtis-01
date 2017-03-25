@@ -47,7 +47,7 @@ public class NadzorDretvi extends Thread {
                     }
                 }
 
-                sleep(2000);
+                sleep(sleepTime);
             } catch (InterruptedException ex) {
                 Logger.getLogger(NadzorDretvi.class.getName()).log(Level.SEVERE, null, ex);
             }
