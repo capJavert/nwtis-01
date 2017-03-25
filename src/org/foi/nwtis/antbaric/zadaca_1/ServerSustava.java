@@ -65,7 +65,7 @@ public class ServerSustava {
             final ProvjeraAdresa provjeraAdresa = new ProvjeraAdresa(konfiguracija, log);
             provjeraAdresa.start();
 
-            final SerijalizatorEvidencije serijalizatorEvidencije = new SerijalizatorEvidencije(konfiguracija);
+            final SerijalizatorEvidencije serijalizatorEvidencije = new SerijalizatorEvidencije(konfiguracija, log);
             serijalizatorEvidencije.start();
 
             final ServerSocket serverSocket = new ServerSocket(port);
@@ -97,6 +97,16 @@ public class ServerSustava {
                         if (thread.isInterupted) {
                             iter.remove();
                         }
+                    }
+                }
+
+                if(state.getLogItemsCount() >= Integer.parseInt(konfiguracija.dajPostavku("brojZahtjevaZaSerijalizaciju"))) {
+                    synchronized (serijalizatorEvidencije) {
+                        serijalizatorEvidencije.notify();
+                    }
+
+                    synchronized (state) {
+                        state.resetLogItemCount();
                     }
                 }
             }

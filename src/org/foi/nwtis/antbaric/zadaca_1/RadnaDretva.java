@@ -311,11 +311,19 @@ public class RadnaDretva extends Thread {
         synchronized (this.log) {
             this.log.badRequest();
         }
+
+        synchronized (this.state) {
+            this.state.setLogItemsCount();
+        }
     }
 
     public void okRequest() {
         synchronized (this.log) {
             this.log.okRequest();
+        }
+
+        synchronized (this.state) {
+            this.state.setLogItemsCount();
         }
     }
 }

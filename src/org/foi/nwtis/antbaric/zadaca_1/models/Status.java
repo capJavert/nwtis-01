@@ -5,9 +5,12 @@ package org.foi.nwtis.antbaric.zadaca_1.models;
  */
 public class Status {
     private String name;
+    private Integer logItemsCount;
 
     public Status() {
+
         this.name = "IDLE";
+        this.logItemsCount = 0;
     }
 
     public String get() {
@@ -16,5 +19,17 @@ public class Status {
 
     public void set(String name) {
         this.name = name;
+    }
+
+    public Integer getLogItemsCount() {
+        return logItemsCount;
+    }
+
+    public void resetLogItemCount() {
+        this.logItemsCount = 0;
+    }
+
+    public void setLogItemsCount() {
+        this.logItemsCount++;
     }
 }
