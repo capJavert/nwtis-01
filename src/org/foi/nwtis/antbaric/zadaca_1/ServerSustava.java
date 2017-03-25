@@ -62,7 +62,7 @@ public class ServerSustava {
             final RezervnaDretva rezervnaDretva = new RezervnaDretva(konfiguracija);
             rezervnaDretva.start();
 
-            final ProvjeraAdresa provjeraAdresa = new ProvjeraAdresa(konfiguracija);
+            final ProvjeraAdresa provjeraAdresa = new ProvjeraAdresa(konfiguracija, log);
             provjeraAdresa.start();
 
             final SerijalizatorEvidencije serijalizatorEvidencije = new SerijalizatorEvidencije(konfiguracija);
@@ -73,8 +73,11 @@ public class ServerSustava {
             while (true) {
                 Socket socket = serverSocket.accept();
 
+                synchronized (log) {
+                    this.log.addRequest(socket.getInetAddress().toString());
+                }
+
                 if(threads.size() < Integer.parseInt(konfiguracija.dajPostavku("maksBrojRadnihDretvi"))) {
-                    System.out.print(threads.size());
                     RadnaDretva radnaDretva = new RadnaDretva(socket, konfiguracija, state, log);
 
                     synchronized (threads) {

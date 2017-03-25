@@ -13,7 +13,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
-import java.security.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,6 +64,7 @@ public class RadnaDretva extends Thread {
                 this.userManager = new UserManager(this.config.dajPostavku("adminDatoteka"));
             } catch (IOException exception){
                 System.out.println(exception.getMessage());
+                this.badRequest();
                 outputStream.write(ErrorNwtis.getMessage("-1").getBytes());
             }
 
@@ -151,7 +151,11 @@ public class RadnaDretva extends Thread {
         }
 
         this.isInterupted = true;
-        //todo azuriraj evidenciju rada
+
+        synchronized (this.log) {
+            this.log.workingThreadsRunningTime += (System.currentTimeMillis() - startTime);
+            this.log.lastWorkingThreadId = this.getId();
+        }
     }
 
     private String execPause(String[] params) throws InterruptedException {
@@ -159,6 +163,7 @@ public class RadnaDretva extends Thread {
 
         if(user != null) {
             if(this.state.get().equals("PAUSE")) {
+                this.badRequest();
                 return ErrorNwtis.getMessage("01");
             } else {
                 synchronized (this.state) {
@@ -166,9 +171,11 @@ public class RadnaDretva extends Thread {
                 }
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
 
+        this.okRequest();
         return "OK;";
     }
 
@@ -181,12 +188,15 @@ public class RadnaDretva extends Thread {
                     this.state.set("IDLE");
                 }
             } else {
+                this.badRequest();
                 return ErrorNwtis.getMessage("02");
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
 
+        this.okRequest();
         return "OK;";
     }
 
@@ -197,12 +207,15 @@ public class RadnaDretva extends Thread {
             if(true) {
                 System.exit(0);
             } else {
+                this.badRequest();
                 return ErrorNwtis.getMessage("03");
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
 
+        this.okRequest();
         return "OK;";
     }
 
@@ -213,39 +226,48 @@ public class RadnaDretva extends Thread {
             if(!this.state.get().equals("IDLE")) {
                 //return log
             } else {
+                this.badRequest();
                 return ErrorNwtis.getMessage("04");
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
 
+        this.okRequest();
         return "OK;";
     }
     
     private String execAdd(String[] params) {
         if(!this.log.findAddress(params[1])) {
-            if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) > this.log.addressCount) {
+            if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) > this.log.getAddresses().size()) {
                 synchronized (this.log) {
                     this.log.setAddress(params[1]);
                 }
             } else {
+                this.badRequest();
                 return ErrorNwtis.getMessage("10");
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("11");
         }
 
+        this.okRequest();
         return "OK;";
     }
 
     private String execTest(String[] params) {
         if(this.log.findAddress(params[1])) {
+            this.okRequest();
+
             if(this.testAddress(params[1])) {
                 return "OK; YES";
             } else {
                 return "OK; NO";
             }
         } else {
+            this.badRequest();
             return ErrorNwtis.getMessage("12");
         }
     }
@@ -258,9 +280,11 @@ public class RadnaDretva extends Thread {
                 this.waitTimer.click();
             }
         } catch (InterruptedException exception){
+            this.badRequest();
             return ErrorNwtis.getMessage("13");
         }
 
+        this.okRequest();
         return "OK;";
     }
 
@@ -283,4 +307,15 @@ public class RadnaDretva extends Thread {
         return command.split(";");
     }
 
+    public void badRequest() {
+        synchronized (this.log) {
+            this.log.badRequest();
+        }
+    }
+
+    public void okRequest() {
+        synchronized (this.log) {
+            this.log.okRequest();
+        }
+    }
 }
