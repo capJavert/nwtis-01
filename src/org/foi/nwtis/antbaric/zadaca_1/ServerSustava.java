@@ -1,19 +1,17 @@
 package org.foi.nwtis.antbaric.zadaca_1;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import org.foi.nwtis.antbaric.konfiguracije.Konfiguracija;
-import org.foi.nwtis.antbaric.konfiguracije.KonfiguracijaApstraktna;
-import org.foi.nwtis.antbaric.konfiguracije.NeispravnaKonfiguracija;
-import org.foi.nwtis.antbaric.konfiguracije.NemaKonfiguracije;
+
+import org.foi.nwtis.antbaric.konfiguracije.*;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 
@@ -38,7 +36,6 @@ public class ServerSustava {
             }
             ServerSustava serverSustava = new ServerSustava();
             serverSustava.startServer(fileName, load);
-
         } else {
             System.out.println("Ne odgovara!");
         }
@@ -46,13 +43,16 @@ public class ServerSustava {
     }
 
     private void startServer(final String fileName, final boolean load) {
-        //todo kreirati listu dretvi
-
         try {
             final Konfiguracija konfiguracija = KonfiguracijaApstraktna.preuzmiKonfiguraciju(fileName);
             final int port = Integer.parseInt(konfiguracija.dajPostavku("port"));
 
-            log = new Evidencija();
+            if(load) {
+                log = loadLogFromFile(konfiguracija);
+            } else {
+                log = new Evidencija();
+            }
+
             threads = new ArrayList<>();
             state = new Status();
 
@@ -74,7 +74,7 @@ public class ServerSustava {
                 Socket socket = serverSocket.accept();
 
                 synchronized (log) {
-                    this.log.addRequest(socket.getInetAddress().toString());
+                    log.addRequest(socket.getInetAddress().toString());
                 }
 
                 if(threads.size() < Integer.parseInt(konfiguracija.dajPostavku("maksBrojRadnihDretvi"))) {
@@ -112,6 +112,22 @@ public class ServerSustava {
             }
         } catch (NemaKonfiguracije | NeispravnaKonfiguracija | IOException ex) {
             Logger.getLogger(ServerSustava.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private Evidencija loadLogFromFile(Konfiguracija config) throws NemaKonfiguracije, NeispravnaKonfiguracija {
+        File file = new File(config.dajPostavku("evidDatoteka"));
+
+        if(file.exists() && file.isFile()) {
+            try {
+                ObjectInputStream ex = new ObjectInputStream(new FileInputStream(file));
+                return (Evidencija) ex.readObject();
+            } catch (Exception var3) {
+                Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, (String)null, var3);
+                throw new NeispravnaKonfiguracija("Ne postoji datoteka ili problem kod čitanja datoteke");
+            }
+        } else {
+            throw new NemaKonfiguracije("Ne postoji datoteka");
         }
     }
 
