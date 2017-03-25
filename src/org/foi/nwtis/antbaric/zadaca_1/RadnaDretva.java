@@ -7,9 +7,7 @@ import org.foi.nwtis.antbaric.zadaca_1.components.WaitTimer;
 import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 import org.foi.nwtis.antbaric.zadaca_1.models.User;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
@@ -223,9 +221,15 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(!this.state.get().equals("IDLE")) {
-                //return log
-            } else {
+            try {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutput out = new ObjectOutputStream(bos);
+                out.writeObject(this.log);
+                out.flush();
+
+                this.okRequest();
+                return "OK; LENGTH " + bos.toByteArray().length + System.lineSeparator() + bos.toString();
+            } catch (IOException e) {
                 this.badRequest();
                 return ErrorNwtis.getMessage("04");
             }
@@ -233,9 +237,6 @@ public class RadnaDretva extends Thread {
             this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
-
-        this.okRequest();
-        return "OK;";
     }
     
     private String execAdd(String[] params) {
