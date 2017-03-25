@@ -115,20 +115,20 @@ public class ServerSustava {
         }
     }
 
-    private Evidencija loadLogFromFile(Konfiguracija config) throws NemaKonfiguracije, NeispravnaKonfiguracija {
+    private Evidencija loadLogFromFile(Konfiguracija config) {
         File file = new File(config.dajPostavku("evidDatoteka"));
 
         if(file.exists() && file.isFile()) {
             try {
                 ObjectInputStream ex = new ObjectInputStream(new FileInputStream(file));
                 return (Evidencija) ex.readObject();
-            } catch (Exception var3) {
-                Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, (String)null, var3);
-                throw new NeispravnaKonfiguracija("Ne postoji datoteka ili problem kod čitanja datoteke");
+            } catch (Exception e) {
+                Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Datoteka nije ispravna", (Exception)null);
             }
         } else {
-            throw new NemaKonfiguracije("Ne postoji datoteka");
+            Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Ne postoji datoteka", (Exception)null);
         }
-    }
 
+        return new Evidencija();
+    }
 }

@@ -62,4 +62,20 @@ public final class Evidencija implements Serializable {
         this.requestsLog.putIfAbsent(address, 0);
         this.requestsLog.put(address, this.requestsLog.get(address)+1);
     }
+
+    public void outputLog() {
+        System.out.println("Uspješni zahtjevi: " + this.successfulRequests);
+        System.out.println("Ne uspješni zahtjevi: " + this.terminatedRequests);
+        System.out.println("Svi zahtjevi: " + this.requests);
+        System.out.println("ID zadnje radne dretve: " + this.lastWorkingThreadId);
+        System.out.println("Vrijeme rada radnih dretvi: " + this.workingThreadsRunningTime + " ms");
+        System.out.println("Adrese");
+        for(Map.Entry<String, Boolean> address : this.addresses.entrySet()) {
+            System.out.println("    " + address.getKey() + ": " + (address.getValue() ? "YES" : "NO"));
+        }
+        System.out.println("Zahtjevi");
+        for(Map.Entry<String, Integer> address : this.requestsLog.entrySet()) {
+            System.out.println("    " + address.getKey() + ": " + address.getValue());
+        }
+    }
 }

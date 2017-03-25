@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 
 import org.foi.nwtis.antbaric.zadaca_1.components.AdministratorSustava;
 import org.foi.nwtis.antbaric.zadaca_1.components.KlijentSustava;
+import org.foi.nwtis.antbaric.zadaca_1.components.PregledSustava;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class KorisnikSustava {
@@ -78,8 +79,15 @@ public class KorisnikSustava {
                     client.connect(socket, this.buildCommand(commandParts));
                     break;
                 case "-prikaz":
+                    if(params.group(3) != null) {
+                        commandParts.add("REMOTE");
+                    } else {
+                        commandParts.add("LOCAL");
+                    }
                     commandParts.add(params.group(1));
                     commandParts.add(params.group(2));
+                    PregledSustava systemView = new PregledSustava();
+                    systemView.connect(this.buildCommand(commandParts));
             }
         } catch (final IOException ex) {
             Logger.getLogger(KorisnikSustava.class.getName()).log(Level.SEVERE, null, ex);
@@ -91,7 +99,10 @@ public class KorisnikSustava {
                 if (outputStream != null) {
                     outputStream.close();
                 }
-                socket.close();
+
+                if(socket != null) {
+                    socket.close();
+                }
             } catch (final IOException ex) {
                 Logger.getLogger(KorisnikSustava.class.getName()).log(Level.SEVERE, null, ex);
             }
