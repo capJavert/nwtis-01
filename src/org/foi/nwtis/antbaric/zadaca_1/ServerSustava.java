@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,11 @@ public class ServerSustava {
             final Konfiguracija konfiguracija = KonfiguracijaApstraktna.preuzmiKonfiguraciju(fileName);
             final int port = Integer.parseInt(konfiguracija.dajPostavku("port"));
 
-            final NadzorDretvi nadzorDretvi = new NadzorDretvi(konfiguracija);
+            log = new Evidencija();
+            threads = new ArrayList<>();
+            state = new Status();
+
+            final NadzorDretvi nadzorDretvi = new NadzorDretvi(konfiguracija, threads);
             nadzorDretvi.start();
 
             final RezervnaDretva rezervnaDretva = new RezervnaDretva(konfiguracija);
@@ -64,10 +69,6 @@ public class ServerSustava {
             serijalizatorEvidencije.start();
 
             final ServerSocket serverSocket = new ServerSocket(port);
-
-            log = new Evidencija();
-            threads = new ArrayList<>();
-            state = new Status();
 
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -85,9 +86,13 @@ public class ServerSustava {
                 }
 
                 synchronized (threads) {
-                    for (RadnaDretva thread : threads) {
+                    Iterator<RadnaDretva> iter = threads.iterator();
+
+                    while (iter.hasNext()) {
+                        RadnaDretva thread = iter.next();
+
                         if (thread.isInterupted) {
-                            threads.remove(thread);
+                            iter.remove();
                         }
                     }
                 }

@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.security.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ public class RadnaDretva extends Thread {
     private Evidencija log;
     private WaitTimer waitTimer;
     public volatile boolean isInterupted;
-    //todo varijabla koja pamti kad je pocela dretva
+    public volatile long startTime;
 
     public RadnaDretva(Socket socket, Konfiguracija config, Status state, Evidencija log) throws IOException {
         this.log = log;
@@ -35,6 +36,7 @@ public class RadnaDretva extends Thread {
         this.state = state;
         this.waitTimer = new WaitTimer();
         this.isInterupted = false;
+        this.startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -49,9 +51,12 @@ public class RadnaDretva extends Thread {
         super.start();
     }
 
+    public void kill() {
+        this.stop();
+    }
+
     @Override
     public void run() {
-        //todo puniti varijablu za trenutno vrijeme
         try {
             this.inputStream = socket.getInputStream();
             this.outputStream = socket.getOutputStream();
@@ -147,8 +152,6 @@ public class RadnaDretva extends Thread {
 
         this.isInterupted = true;
         //todo azuriraj evidenciju rada
-        //todo obrisati dretvu iz liste
-        //todo smanjiti brojac, medusobno iskljucivanje
     }
 
     private String execPause(String[] params) throws InterruptedException {
