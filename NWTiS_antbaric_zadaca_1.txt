@@ -7,4 +7,4 @@ maksAdresa=10
 maksBrojRadnihDretvi=7
 brojZahtjevaZaSerijalizaciju=100
 evidDatoteka=DZ_1_evidencija.bin
-adminDatoteka=DZ1_administratori.txt
+adminDatoteka=DZ_1_administratori.txt

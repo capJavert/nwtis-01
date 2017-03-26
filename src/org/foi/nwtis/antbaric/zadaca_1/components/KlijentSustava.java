@@ -10,8 +10,6 @@ import java.net.Socket;
  */
 public class KlijentSustava {
     public void connect(Socket socket, String command) throws IOException {
-        System.out.println(command);
-
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
 

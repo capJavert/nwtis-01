@@ -59,7 +59,7 @@ public class ServerSustava {
             final NadzorDretvi nadzorDretvi = new NadzorDretvi(konfiguracija, threads);
             nadzorDretvi.start();
 
-            final RezervnaDretva rezervnaDretva = new RezervnaDretva(konfiguracija);
+            final RezervnaDretva rezervnaDretva = new RezervnaDretva(konfiguracija, log);
             rezervnaDretva.start();
 
             final ProvjeraAdresa provjeraAdresa = new ProvjeraAdresa(konfiguracija, log);

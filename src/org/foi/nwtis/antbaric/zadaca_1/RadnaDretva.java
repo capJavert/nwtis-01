@@ -202,9 +202,14 @@ public class RadnaDretva extends Thread {
         User user = this.userManager.findOne(params[0], params[1]);
 
         if(user != null) {
-            if(true) {
+            try {
+                this.okRequest();
+                this.serializeThisShit();
+
                 System.exit(0);
-            } else {
+
+                return "OK;";
+            } catch (IOException e) {
                 this.badRequest();
                 return ErrorNwtis.getMessage("03");
             }
@@ -212,9 +217,6 @@ public class RadnaDretva extends Thread {
             this.badRequest();
             return ErrorNwtis.getMessage("00");
         }
-
-        this.okRequest();
-        return "OK;";
     }
 
     private String execStat(String[] params) {
@@ -326,5 +328,18 @@ public class RadnaDretva extends Thread {
         synchronized (this.state) {
             this.state.setLogItemsCount();
         }
+    }
+
+    private void serializeThisShit() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        ObjectOutput out = new ObjectOutputStream(bos);
+        out.writeObject(this.log);
+        out.flush();
+        byte[] data = bos.toByteArray();
+
+        FileOutputStream fos = new FileOutputStream(this.config.dajPostavku("evidDatoteka"));
+        fos.write(data);
+        fos.close();
     }
 }

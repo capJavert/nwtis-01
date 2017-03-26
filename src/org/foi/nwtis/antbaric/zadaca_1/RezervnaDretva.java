@@ -11,9 +11,13 @@ public class RezervnaDretva extends Thread {
 
     private final Konfiguracija konfiguracija;
     private Socket socket;
+    public Evidencija log;
 
-    public RezervnaDretva(final Konfiguracija konfiguracija) {
+
+    public RezervnaDretva(final Konfiguracija konfiguracija, Evidencija log) {
+
         this.konfiguracija = konfiguracija;
+        this.log = log;
     }
 
     @Override
@@ -34,6 +38,10 @@ public class RezervnaDretva extends Thread {
                 socket.getOutputStream().write(ErrorNwtis.getMessage("20").getBytes());
                 socket.getOutputStream().flush();
                 socket.shutdownOutput();
+
+                synchronized (this.log) {
+                    this.log.requests++;
+                }
             } catch (final IOException ex) {
                 Logger.getLogger(RezervnaDretva.class.getName()).log(Level.SEVERE, null, ex);
             }
