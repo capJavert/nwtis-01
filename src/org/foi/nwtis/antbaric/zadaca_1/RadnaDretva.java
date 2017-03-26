@@ -316,10 +316,12 @@ public class RadnaDretva extends Thread {
         try {
             this.waitTimer.start(Integer.parseInt(params[1]));
 
+            outputStream.write("OK;".getBytes());
+            outputStream.flush();
             while (this.waitTimer.getTimeout() > 0) {
                 this.waitTimer.click();
             }
-        } catch (InterruptedException exception){
+        } catch (Exception exception){
             this.badRequest();
             return ErrorNwtis.getMessage("13");
         }
