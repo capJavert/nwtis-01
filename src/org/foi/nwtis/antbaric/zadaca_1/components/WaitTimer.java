@@ -17,7 +17,9 @@ public class WaitTimer {
      * @param timeout
      */
     public void start(int timeout) {
-        this.timeout = timeout;
+        if(timeout > 0) {
+            this.timeout = timeout;
+        }
     }
 
     /**
@@ -29,7 +31,7 @@ public class WaitTimer {
         this.timeout--;
     }
 
-    private void stop() {
+    public void stop() {
 
         this.timeout = 0;
     }
