@@ -16,6 +16,9 @@ import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 
 public class KorisnikSustava {
 
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         boolean load = false;
         final String serverName;
@@ -35,6 +38,10 @@ public class KorisnikSustava {
 
     }
 
+    /**
+     *
+     * @param params
+     */
     private void startUser(Matcher params) {
         String serverName;
         Integer port;
@@ -109,6 +116,11 @@ public class KorisnikSustava {
         }
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String buildCommand(ArrayList<String> params) {
         String command = "";
 

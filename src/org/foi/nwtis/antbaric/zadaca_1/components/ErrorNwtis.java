@@ -2,6 +2,11 @@ package org.foi.nwtis.antbaric.zadaca_1.components;
 
 public class ErrorNwtis {
 
+    /**
+     *
+     * @param code
+     * @return
+     */
     public static String getMessage(String code) {
         switch (code) {
             case "90":

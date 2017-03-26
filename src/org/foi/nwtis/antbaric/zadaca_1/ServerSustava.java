@@ -15,11 +15,16 @@ import org.foi.nwtis.antbaric.konfiguracije.*;
 import org.foi.nwtis.antbaric.zadaca_1.components.SyntaxValidator;
 import org.foi.nwtis.antbaric.zadaca_1.models.Status;
 
+
 public class ServerSustava {
     public static Evidencija log;
     public static List<RadnaDretva> threads;
     public static Status state;
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         boolean load = false;
         final String fileName;
@@ -42,6 +47,11 @@ public class ServerSustava {
 
     }
 
+    /**
+     *
+     * @param fileName
+     * @param load
+     */
     private void startServer(final String fileName, final boolean load) {
         try {
             final Konfiguracija konfiguracija = KonfiguracijaApstraktna.preuzmiKonfiguraciju(fileName);
@@ -115,6 +125,11 @@ public class ServerSustava {
         }
     }
 
+    /**
+     *
+     * @param config
+     * @return
+     */
     private Evidencija loadLogFromFile(Konfiguracija config) {
         File file = new File(config.dajPostavku("evidDatoteka"));
 

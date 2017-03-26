@@ -14,6 +14,11 @@ import java.util.logging.Logger;
  * Created by javert on 25/03/2017.
  */
 public class PregledSustava {
+    /**
+     *
+     * @param command
+     * @throws IOException
+     */
     public void connect(String command) throws IOException {
         String[] commandLine = command.split(";");
         String filePath;

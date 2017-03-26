@@ -7,6 +7,12 @@ import java.net.Socket;
 
 
 public class AdministratorSustava {
+    /**
+     *
+     * @param socket
+     * @param command
+     * @throws IOException
+     */
     public void connect(Socket socket, String command) throws IOException {
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();

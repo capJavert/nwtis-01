@@ -9,6 +9,12 @@ import java.net.Socket;
  * Created by javert on 25/03/2017.
  */
 public class KlijentSustava {
+    /**
+     *
+     * @param socket
+     * @param command
+     * @throws IOException
+     */
     public void connect(Socket socket, String command) throws IOException {
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();

@@ -156,6 +156,12 @@ public class RadnaDretva extends Thread {
         }
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     * @throws InterruptedException
+     */
     private String execPause(String[] params) throws InterruptedException {
         User user = this.userManager.findOne(params[0], params[1]);
 
@@ -177,6 +183,12 @@ public class RadnaDretva extends Thread {
         return "OK;";
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     * @throws InterruptedException
+     */
     private String execStart(String[] params) throws InterruptedException {
         User user = this.userManager.findOne(params[0], params[1]);
 
@@ -198,6 +210,11 @@ public class RadnaDretva extends Thread {
         return "OK;";
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String execStop(String[] params) {
         User user = this.userManager.findOne(params[0], params[1]);
 
@@ -219,6 +236,11 @@ public class RadnaDretva extends Thread {
         }
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String execStat(String[] params) {
         User user = this.userManager.findOne(params[0], params[1]);
 
@@ -240,7 +262,12 @@ public class RadnaDretva extends Thread {
             return ErrorNwtis.getMessage("00");
         }
     }
-    
+
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String execAdd(String[] params) {
         if(!this.log.findAddress(params[1])) {
             if(Integer.parseInt(this.config.dajPostavku("maksAdresa")) > this.log.getAddresses().size()) {
@@ -260,6 +287,11 @@ public class RadnaDretva extends Thread {
         return "OK;";
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String execTest(String[] params) {
         if(this.log.findAddress(params[1])) {
             this.okRequest();
@@ -275,6 +307,11 @@ public class RadnaDretva extends Thread {
         }
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     private String execWait(String[] params) {
         try {
             this.waitTimer.start(Integer.parseInt(params[1]));
@@ -291,6 +328,11 @@ public class RadnaDretva extends Thread {
         return "OK;";
     }
 
+    /**
+     *
+     * @param address
+     * @return
+     */
     private boolean testAddress(String address) {
         try {
             URL u = new URL (address);
@@ -304,6 +346,11 @@ public class RadnaDretva extends Thread {
         }
     }
 
+    /**
+     *
+     * @param command
+     * @return
+     */
     private String[] readCommand(String command) {
 
 
@@ -330,6 +377,10 @@ public class RadnaDretva extends Thread {
         }
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     private void serializeThisShit() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

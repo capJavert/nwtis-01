@@ -8,6 +8,11 @@ import java.util.ArrayList;
 public class UserManager {
     private ArrayList<User> users;
 
+    /**
+     *
+     * @param fileName
+     * @throws IOException
+     */
     public UserManager(final String fileName) throws IOException {
         users = new ArrayList<>();
 
@@ -30,11 +35,21 @@ public class UserManager {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<User> getUsers() {
 
         return users;
     }
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     public User findOne(String username, String password) {
         for(User user : users) {
             if(user.getUsername().equals(username) && user.getPassword().equals(password)) {

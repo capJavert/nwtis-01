@@ -14,11 +14,19 @@ public final class Evidencija implements Serializable {
     private HashMap<String, Boolean> addresses = new HashMap<>();
     private HashMap<String, Integer> requestsLog = new HashMap<>();
 
+    /**
+     *
+     * @return
+     */
     public HashMap<String, Boolean> getAddresses() {
 
         return addresses;
     }
 
+    /**
+     *
+     * @param address
+     */
     public void setAddress(String address) {
         this.addresses.put(address, false);
     }
@@ -28,6 +36,11 @@ public final class Evidencija implements Serializable {
         return requestsLog;
     }
 
+    /**
+     *
+     * @param address
+     * @return
+     */
     public boolean findAddress(String address) {
         for(Map.Entry<String, Boolean> item : this.addresses.entrySet()) {
             if(item.getKey().equals(address)) {
@@ -38,6 +51,11 @@ public final class Evidencija implements Serializable {
         return false;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public boolean findRequest(String id) {
         for(Map.Entry<String, Integer> item : this.requestsLog.entrySet()) {
             if(item.getKey().equals(id)) {
