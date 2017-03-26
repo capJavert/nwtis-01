@@ -31,8 +31,7 @@ public class NadzorDretvi extends Thread {
             try {
                 long currentTime = System.currentTimeMillis();
 
-                // maknuti
-                System.out.println(getClass().toString());
+                System.out.println("NadzornaDretva...");
 
                 synchronized (this.threads) {
                     Iterator<RadnaDretva> iter = this.threads.iterator();

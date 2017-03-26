@@ -34,6 +34,8 @@ public class RezervnaDretva extends Thread {
                 Logger.getLogger(RezervnaDretva.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            System.out.println("RezervnaDretva...");
+
             try {
                 socket.getOutputStream().write(ErrorNwtis.getMessage("20").getBytes());
                 socket.getOutputStream().flush();

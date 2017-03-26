@@ -54,6 +54,8 @@ public class RadnaDretva extends Thread {
 
     @Override
     public void run() {
+        String name = "antbaric-"+this.getId();
+
         try {
             this.inputStream = socket.getInputStream();
             this.outputStream = socket.getOutputStream();
@@ -85,43 +87,43 @@ public class RadnaDretva extends Thread {
             try {
                 switch (command.replace(" ", "")) {
                     case "pause":
-                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; PAUSE;");
+                        System.out.println(name + " -> USER " + params[0] + "; PASSWD " + params[1] + "; PAUSE;");
                         outputStream.write(execPause(params).getBytes());
                         outputStream.flush();
                         break;
                     case "start":
-                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; START;");
+                        System.out.println(name + " -> USER " + params[0] + "; PASSWD " + params[1] + "; START;");
                         outputStream.write(execStart(params).getBytes());
                         outputStream.flush();
                         break;
                     case "stop":
-                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; STOP;");
+                        System.out.println(name + " -> USER " + params[0] + "; PASSWD " + params[1] + "; STOP;");
                         outputStream.write(execStop(params).getBytes());
                         outputStream.flush();
                         break;
                     case "stat":
-                        System.out.println("USER " + params[0] + "; PASSWD " + params[1] + "; STAT;");
+                        System.out.println(name + " -> USER " + params[0] + "; PASSWD " + params[1] + "; STAT;");
                         outputStream.write(execStat(params).getBytes());
                         outputStream.flush();
                         break;
                     case "-a":
                         if(!this.state.get().equals("IDLE")) break;
 
-                        System.out.println("USER " + params[0] + "; ADD " + params[1] + ";");
+                        System.out.println(name + " -> USER " + params[0] + "; ADD " + params[1] + ";");
                         outputStream.write(execAdd(params).getBytes());
                         outputStream.flush();
                         break;
                     case "-t":
                         if(!this.state.get().equals("IDLE")) break;
 
-                        System.out.println("USER " + params[0] + "; TEST " + params[1] + ";");
+                        System.out.println(name + " -> USER " + params[0] + "; TEST " + params[1] + ";");
                         outputStream.write(execTest(params).getBytes());
                         outputStream.flush();
                         break;
                     case "-w":
                         if(!this.state.get().equals("IDLE")) break;
 
-                        System.out.println("USER " + params[0] + "; WAIT " + params[1] + ";");
+                        System.out.println(name + " -> USER " + params[0] + "; WAIT " + params[1] + ";");
                         outputStream.write(execWait(params).getBytes());
                         outputStream.flush();
                         break;

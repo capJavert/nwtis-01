@@ -28,6 +28,8 @@ public class SerijalizatorEvidencije extends Thread {
             try {
                 wait();
 
+                System.out.println("SerijalizatorEvidencije...");
+
                 this.serializeThisShit();
 
             } catch (InterruptedException ex) {

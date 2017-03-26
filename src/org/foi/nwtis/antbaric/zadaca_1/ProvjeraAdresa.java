@@ -29,6 +29,8 @@ public class ProvjeraAdresa extends Thread {
         int sleepTime = Integer.parseInt(konfiguracija.dajPostavku("intervaAdresneDretve"));
 
         while (true) {
+            System.out.println("ProvjeraAdresa...");
+
             try {
                 synchronized (this.log) {
                     for(Map.Entry<String, Boolean> item : this.log.getAddresses().entrySet()) {
