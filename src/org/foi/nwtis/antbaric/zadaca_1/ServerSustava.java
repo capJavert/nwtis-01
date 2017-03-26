@@ -138,10 +138,10 @@ public class ServerSustava {
                 ObjectInputStream ex = new ObjectInputStream(new FileInputStream(file));
                 return (Evidencija) ex.readObject();
             } catch (Exception e) {
-                Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Datoteka nije ispravna", (Exception)null);
+                Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Datoteka evidencije nije ispravna", (Exception)null);
             }
         } else {
-            Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Ne postoji datoteka", (Exception)null);
+            Logger.getLogger(KonfiguracijaBin.class.getName()).log(Level.SEVERE, "Ne postoji datoteka evidencije", (Exception)null);
         }
 
         return new Evidencija();
