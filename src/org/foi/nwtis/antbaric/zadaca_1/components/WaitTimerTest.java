@@ -16,17 +16,26 @@ class WaitTimerTest {
         this.timer = new WaitTimer();
     }
 
+    /**
+     * Test if timeout is initiated
+     */
     @Test
     void getTimeout() {
         assert this.timer.getTimeout() == 0;
     }
 
+    /**
+     * Test what happens if timeout is se as negative value
+     */
     @Test
     void start() {
         this.timer.start(-1);
         assert this.timer.getTimeout() > 0;
     }
 
+    /**
+     * Test stop method
+     */
     @Test
     void click() {
         this.timer.stop();

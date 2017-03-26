@@ -18,11 +18,17 @@ class UserManagerTest {
         this.userManager = new UserManager("DZ_1_administratori.txt");
     }
 
+    /**
+     * Test admin users file
+     */
     @Test
     void getUsers() {
         assert this.userManager.getUsers() != null;
     }
 
+    /**
+     * Test finding a User
+     */
     @Test
     void findOne() {
         assert this.userManager.findOne("pero", "123456") != null;
